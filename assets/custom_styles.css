@@ -1,8 +1,0 @@
-/* custom_styles.css */
-.dash-spreadsheet td, .dash-spreadsheet th {
-    border-radius: 35px !important;
-}
-/* Change background color of the cell being edited to blue */
-.dash-cell.focused {
-    background-color: #ADD8E6 !important; /* Light blue; adjust the color code as needed */
-}
