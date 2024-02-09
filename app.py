@@ -248,7 +248,7 @@ page_1_layout = html.Div(children=[
     ),
 
 ], style={
-    'backgroundImage': 'url("/assets/hex_bg_red.gif")',
+    'backgroundImage': 'url("/assets/hex_Backg.gif")',
     'backgroundRepeat': 'repeat',
     'backgroundPosition': 'center',
     'backgroundSize': 'cover',
