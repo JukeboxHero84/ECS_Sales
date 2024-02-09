@@ -205,6 +205,8 @@ page_1_layout = html.Div(children=[
         ], 
 
     ),
+    html.Div(id='incentive-text-save-status', style={'display': 'none','color': 'green', 'textAlign': 'center'}),
+    html.Div(id='save-status', style={'display': 'none','color': 'green', 'textAlign': 'center'}),
     html.Div([
         dcc.Textarea(
             id='incentive-text',
