@@ -9,6 +9,7 @@ import dash_bootstrap_components as dbc
 from dash.exceptions import PreventUpdate
 
 app = Dash(__name__, external_stylesheets=[dbc.themes.BOOTSTRAP], suppress_callback_exceptions=True)
+server = app.server
 
 app.clientside_callback(
     ClientsideFunction(
