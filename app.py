@@ -178,11 +178,13 @@ page_1_layout = html.Div(children=[
         data=load_data_from_json(),  # Load the data directly here
         editable=True,
           # Allow editing, controlled at the column level
-        style_table={'height': '300px', 'overflowY': 'auto'},
+        style_table={'height': '330px', 'overflowY': 'auto'},
         style_cell={
             'textAlign': 'left',
             'border': '5px solid maroon',
             'padding': '5px',
+            'fontSize': '20px',  # Increase font size for bigger numbers
+            'fontFamily': 'Impact',  # Optionally set a font family
         },
         style_data_conditional=[
             {'if': {'filter_query': '{{{}}} <= 1000'.format(col), 'column_id': col},
