@@ -1,0 +1,65 @@
+[
+    {
+        "Name": "Rob",
+        "Monday": 0,
+        "Tuesday": "100",
+        "Wednesday": "0",
+        "Thursday": 0,
+        "Friday": 0,
+        "Goal": 1000
+    },
+    {
+        "Name": "Wayne",
+        "Monday": 0,
+        "Tuesday": "100",
+        "Wednesday": 0,
+        "Thursday": 0,
+        "Friday": 0,
+        "Goal": 1000
+    },
+    {
+        "Name": "George",
+        "Monday": 0,
+        "Tuesday": "100",
+        "Wednesday": "0",
+        "Thursday": "0",
+        "Friday": 0,
+        "Goal": 1000
+    },
+    {
+        "Name": "JT",
+        "Monday": 0,
+        "Tuesday": "100",
+        "Wednesday": "0",
+        "Thursday": 0,
+        "Friday": 0,
+        "Goal": 1000
+    },
+    {
+        "Name": "Keenan",
+        "Monday": 0,
+        "Tuesday": "100",
+        "Wednesday": "0",
+        "Thursday": 0,
+        "Friday": 0,
+        "Goal": 1000
+    },
+    {
+        "Name": "Payton",
+        "Monday": "0",
+        "Tuesday": "100",
+        "Wednesday": "0",
+        "Thursday": 0,
+        "Friday": 0,
+        "Goal": 1000
+    },
+    {
+        "Name": "Taylor",
+        "Monday": 0,
+        "Tuesday": "100",
+        "Wednesday": 0,
+        "Thursday": 0,
+        "Friday": 0,
+        "Goal": 1000
+    }
+]

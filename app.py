@@ -6,6 +6,8 @@ import plotly.graph_objects as go  # Import for custom modifications
 from dash.dependencies import Input, Output, ClientsideFunction
 import dash_bootstrap_components as dbc
 from dash.exceptions import PreventUpdate
+import json
+
 
 app = Dash(__name__, external_stylesheets=[dbc.themes.BOOTSTRAP], suppress_callback_exceptions=True)
 server = app.server
@@ -40,6 +42,22 @@ data = pd.DataFrame(index=names, columns=weekdays).reset_index().rename(columns=
 data.fillna(0, inplace=True)  # Replace NaN with 0 for editable purposes
 
 data['Goal'] = 1000
+
+def load_data_from_json(filename='sales_data.json'):
+    try:
+        with open(filename, 'r') as file:
+            return json.load(file)
+    except FileNotFoundError:
+        return []  # Return an empty list if no data file exists
+
+def save_data_to_json(data, filename='sales_data.json'):
+    try:
+        with open(filename, 'w') as file:
+            json.dump(data, file, indent=4)
+        print("data saved successfully")
+    except Exception as e:
+        print(f"error saving data: {e}")
+
 
 # Define initial bar graph figure
 initial_fig = go.Figure()
@@ -130,6 +148,7 @@ page_1_layout = html.Div(children=[
     ], style={'textAlign': 'center', 'display': 'flex', 'justifyContent': 'center', 'alignItems': 'center'}),
     
     # Sales table
+    
     dash_table.DataTable(
         id='sales-table',
         columns=(
@@ -137,8 +156,9 @@ page_1_layout = html.Div(children=[
             [{"name": day, "id": day, "editable":True} for day in weekdays] +  # Make weekday columns editable
             [{"name": "Goal", "id": "Goal", "editable": True}]  # Add editable Goal column
         ),
-        data=data.to_dict('records'),
-        editable=True,  # Allow editing, controlled at the column level
+        data=load_data_from_json(),  # Load the data directly here
+        editable=True,
+          # Allow editing, controlled at the column level
         style_table={'height': '300px', 'overflowY': 'auto'},
         style_cell={
             'textAlign': 'left',
@@ -165,7 +185,7 @@ page_1_layout = html.Div(children=[
              'color': 'orange'} for col in weekdays
         ]
     ),
-
+ html.Div(id='save-status', style={'color': 'green', 'margin': '10px', 'textAlign': 'center'}),
  html.Div([
         dcc.Textarea(
             id='incentive-text',
@@ -216,6 +236,26 @@ page_1_layout = html.Div(children=[
     'width': '100%'
 })  
 
+@app.callback(
+    Output('sales-table', 'data'),  # Assuming 'sales-table' is the id of your DataTable
+    [Input('url', 'pathname')]
+)
+def load_data_on_page_load_or_refresh(pathname):
+    data = load_data_from_json()  # Your function to load data from JSON
+    return data
+# Assuming `app` is your Dash app instance and `data` is the DataFrame
+
+@app.callback(
+    Output('save-status', 'children'),  # Replace with an actual Output if needed
+    Input('sales-table', 'data_timestamp'),
+    State('sales-table', 'data'),
+    prevent_initial_call=True
+)
+def save_table_on_edit(timestamp, data):
+    if data:
+        save_data_to_json(data)
+        return "Data saved!"  # Or another suitable message/action  
+    return "no data to save"  # Or another suitable message/action
 
 @app.callback(
     Output('cycling-image', 'src'),
