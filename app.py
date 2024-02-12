@@ -127,7 +127,7 @@ index_page = html.Div([
 def update_output(n_clicks, email):
     if n_clicks > 0:
         if email in accepted_emails:
-            access_level = 'full' if email in ['payton@ecsempire.com', 'wayne@ecsempire.com', 'robert@ecsempire.com'] else 'limited'
+            access_level = 'full' if email in ['payton@ecsempire.com', 'wayne@ecsempire.com', 'robert@ecsempire.com', 'george@ecsempire.com'] else 'limited'
         return '/page_1', {'access': access_level}  # This is the URL path you want to redirect to
     return '/', {}  # Stay on the index page if conditions are not met
 
@@ -149,8 +149,6 @@ def adjust_editable_cells(access_data):
 page_1_layout = html.Div(children=[
     # Parent div for logos and title
     html.Div(children=[
-        # Left logo
-        html.Img(src='/assets/ECS TRANSPARENT LOGO.png', style={'height': '200px', 'width': 'auto', 'display': 'inline-block'}),
         
         # Title
         html.H1(children='Empire Sales Board', style={
@@ -159,11 +157,8 @@ page_1_layout = html.Div(children=[
             'textAlign': 'center',
             'display': 'inline-block',
             'margin': '0 20px',
-            'font-size': '72px'  # Adjusted font size
+            'font-size': '15px'  # Adjusted font size
         }),
-        
-        # Right logo
-        html.Img(src='/assets/ECS TRANSPARENT LOGO.png', style={'height': '200px', 'width': 'auto', 'display': 'inline-block'}),
     ], style={'textAlign': 'center', 'display': 'flex', 'justifyContent': 'center', 'alignItems': 'center'}),
     
     # Sales table
@@ -178,13 +173,21 @@ page_1_layout = html.Div(children=[
         data=load_data_from_json(),  # Load the data directly here
         editable=True,
           # Allow editing, controlled at the column level
-        style_table={'height': '330px', 'overflowY': 'auto'},
+        style_table={'height': '720px', 'overflowY': 'auto'},
         style_cell={
-            'textAlign': 'left',
-            'border': '5px solid maroon',
-            'padding': '5px',
-            'fontSize': '20px',  # Increase font size for bigger numbers
-            'fontFamily': 'Impact',  # Optionally set a font family
+        'textAlign': 'center',
+        'border': '5px solid maroon',
+        'padding': '5px',
+        'fontSize': '55px',
+        'fontFamily': 'Impact',
+        'height': '90px',  # Increase cell height
+        'backgroundColor': 'rgba(255, 255, 255, 0.5)',
+        'whiteSpace': 'normal',  # Ensures text wrapping is enabled
+        'minWidth': '180px',  # Adjust as needed
+        'width': '180px',  # Adjust as needed
+        'maxWidth': '180px',  # Adjust as needed
+        'overflow': 'hidden',
+        'textOverflow': 'ellipsis',
         },
         style_data_conditional=[
             {'if': {'filter_query': '{{{}}} <= 1000'.format(col), 'column_id': col},
@@ -205,10 +208,11 @@ page_1_layout = html.Div(children=[
             {'if': {'filter_query': '{{{}}} > 5000'.format(col), 'column_id': col},
              'color': 'orange'} for col in weekdays
         ], 
+        
 
     ),
-    html.Div(id='incentive-text-save-status', style={'display': 'none','color': 'green', 'textAlign': 'center'}),
-    html.Div(id='save-status', style={'display': 'none','color': 'green', 'textAlign': 'center'}),
+     html.Div(id='incentive-text-save-status', style={'display': 'none','color': 'green', 'textAlign': 'center'}),
+     html.Div(id='save-status', style={'display': 'none','color': 'green', 'textAlign': 'center'}),
     html.Div([
         dcc.Textarea(
             id='incentive-text',
@@ -216,9 +220,9 @@ page_1_layout = html.Div(children=[
             style={
                 'width': '100%', 
                 'height': 'auto', 
-                'minHeight': '50px', 
+                'minHeight': '150px', 
                 'backgroundColor': 'rgba(255, 120, 0, 0.65)',
-                'fontSize': '20px',
+                'fontSize': '70px',
                 'textAlign': 'center',
                 'color': '#000000',
                 'font-family': 'Impact, Charcoal, sans-serif',
@@ -236,13 +240,23 @@ page_1_layout = html.Div(children=[
                 id='sales-graph',
                 # figure=figure  # Your Plotly figure goes here
             )
-        ], style={'width': '50%', 'display': 'inline-block', 'verticalAlign': 'top'}),
-        
-        # Right Column for the Cycling Image
-        html.Div([
-            html.Img(id='cycling-image', src='/assets/WOC_deals1.jpg', style={'width': '100%', 'height': '400px'}),
-        ], style={'width': '50%', 'display': 'inline-block', 'verticalAlign': 'top'}),
-    ], style={'display': 'flex', 'width': '100%'}),
+        ], style={'width': '100%', 'display': 'block', 'verticalAlign': 'top'}),  # Adjusted for clarity
+    
+    # Image Container
+    html.Div([
+        html.Img(
+            id='cycling-image', 
+            src='/assets/WOC_deals1.jpg', 
+            style={
+                'width': '100%',  # This ensures the image is responsive and fills the width of its container
+                'height': 'auto',  # Setting height to auto preserves the image's aspect ratio
+                'object-fit': 'contain',  # This makes sure the image is scaled to be as large as possible without cropping or stretching
+                'display': 'block',  # Ensures the image is not inline
+                'maxHeight': '400px',  # You can adjust this value to set a maximum height
+            }
+        ),
+    ], style={'width': '100%', 'display': 'block', 'verticalAlign': 'top'}),
+], style={'display': 'flex', 'flex-direction': 'column', 'width': '100%'}),
     
     # Interval component for triggering updates to the image
     dcc.Interval(
@@ -261,11 +275,13 @@ page_1_layout = html.Div(children=[
 })  
 
 @app.callback(
-    Output('incentive-text', 'value'),
-    [Input('url', 'pathname')]
+    Output('incentive-text', 'value'),  # Assuming 'incentive-text' is the id of your Textarea
+    [Input('interval-component', 'n_intervals')]  # Triggered by the Interval component
 )
-def load_incentive_text_on_page_load(pathname):
-    return load_incentive_text_from_json()
+def refresh_incentive_text(n):
+    if n % 2 == 0:  # Check if the interval count is even
+        return load_incentive_text_from_json()  # Your function to load incentives from JSON
+    raise dash.exceptions.PreventUpdate  # Prevents updating the component
 
 @app.callback(
     Output('incentive-text-save-status', 'children'),  # An element to show save status
@@ -359,19 +375,33 @@ def update_graph(rows):
         yaxis={'categoryorder': 'total ascending'},
         paper_bgcolor='rgba(0, 0, 0, 0)',  # Match the app's background color
         font_color='#FFFFFF',
-        plot_bgcolor= 'rgba(0, 0, 0, 0)'  # Improve text contrast against the dark background
+        plot_bgcolor= 'rgba(0, 0, 0, 0)',  # Improve text contrast against the dark background
+        height=700
     )
 
     return fig
 
-# Callback to render page content based on URL
-@app.callback(Output('page-content', 'children'),
-              [Input('url', 'pathname')])
-def display_page(pathname):
+@app.callback(
+    Output('page-content', 'children'),
+    [Input('url', 'pathname'),
+     Input('user-access-level', 'data')])  # Consider user access level
+def display_page(pathname, user_access_level):
+    # Default to login page if no user access level data is available or for the root path
+    if pathname == "/" or user_access_level is None:
+        return index_page
+
     if pathname == '/page_1':
-        return page_1_layout
-    else:
-        return index_page  # Or any other default page you have
+        # Here, you could further customize the response based on user access level
+        if user_access_level.get('access') == 'full' or user_access_level.get('access') == 'limited':
+            return page_1_layout
+        else:
+            # Redirect to login page if the access level is not recognized
+            return index_page
+
+    # Add conditions for other pages as necessary
+
+    # Fallback for unrecognized paths
+    return "Page not found"  # Consider a more user-friendly 404 page
 
 if __name__ == '__main__':
     app.run(debug=True)
