@@ -280,11 +280,10 @@ def save_incentive_text_on_edit(n_blur, text):
 
 @app.callback(
     Output('sales-table', 'data'),  # Assuming 'sales-table' is the id of your DataTable
-    [Input('url', 'pathname')]
+    [Input('interval-component', 'n_intervals')]  # Triggered by the Interval component
 )
-def load_data_on_page_load_or_refresh(pathname):
-    data = load_data_from_json()  # Your function to load data from JSON
-    return data
+def refresh_sales_data(n):
+    return load_data_from_json()  # Your function to load data from JSON
 # Assuming `app` is your Dash app instance and `data` is the DataFrame
 
 @app.callback(
