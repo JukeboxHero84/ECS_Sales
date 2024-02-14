@@ -1,4 +1,4 @@
-from dash import Dash, dcc, html, Input, Output, State, dash_table, callback
+from dash import Dash, dcc, html, Input, Output, State, dash_table, callback, callback_context
 import dash
 import pandas as pd
 import plotly.express as px
@@ -7,6 +7,7 @@ from dash.dependencies import Input, Output, ClientsideFunction
 import dash_bootstrap_components as dbc
 from dash.exceptions import PreventUpdate
 import json
+from datetime import datetime, timedelta
 
 
 app = Dash(__name__, external_stylesheets=[dbc.themes.BOOTSTRAP], suppress_callback_exceptions=True)
@@ -41,12 +42,20 @@ weekdays = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"]
 data = pd.DataFrame(index=names, columns=weekdays).reset_index().rename(columns={'index': 'Name'})
 data.fillna(0, inplace=True)  # Replace NaN with 0 for editable purposes
 
-data['Goal'] = 1000
+data['Total'] = data[weekdays].sum(axis=1)
 
 def load_data_from_json(filename='sales_data.json'):
     try:
         with open(filename, 'r') as file:
-            return json.load(file)
+            data_dict = json.load(file)
+        # Convert the loaded data into a DataFrame
+        df = pd.DataFrame(data_dict)
+        # Ensure all weekday columns are numeric and replace any NaNs with 0
+        for day in weekdays:
+            df[day] = pd.to_numeric(df[day], errors='coerce').fillna(0)
+        # Calculate the 'Total' column after ensuring numeric conversion
+        df['Total'] = df[weekdays].sum(axis=1)
+        return df.to_dict('records')  # Convert DataFrame back to dict format for DataTable
     except FileNotFoundError:
         return []  # Return an empty list if no data file exists
 
@@ -77,13 +86,21 @@ def load_incentive_text_from_json(filename='incentive_data.json'):
     except Exception as e:
         return f"Error loading incentive text: {e}"
 
+
+
 # Define initial bar graph figure
 initial_fig = go.Figure()
 
 app.layout = html.Div([
     dcc.Location(id='url', refresh=False),
+    dcc.Store(id='notification-data', data=json.dumps({'last_data': None, 'show_notification': False})),
     dcc.Store(id='user-access-level'),  # Store the user's access level
-    html.Div(id='page-content')
+    html.Div(id='page-content'),
+    html.Audio(id='notification-audio', src='/assets/Trumpet.m4a', autoPlay=True, style={'display': 'none'})
+       
+
+
+
 ])
 
 
@@ -148,66 +165,58 @@ def adjust_editable_cells(access_data):
 
 page_1_layout = html.Div(children=[
     # Parent div for logos and title
-    html.Div(children=[
+    
+    
+    html.Div([
+
         
-        # Title
-        html.H1(children='Empire Sales Board', style={
-            'font-family': 'Impact, Charcoal, sans-serif',
-            'color': '#FFFFFF',
+
+    
+        dash_table.DataTable(
+            id='sales-table',
+            columns=(
+                [{"name": "Name", "id": "Name", "editable": False}] +  # Make Name column non-editable
+                [{"name": day, "id": day, "editable":True} for day in weekdays] +  # Make weekday columns editable
+                [{"name": "Total", "id": "Total", "editable": False}]  # Add non-editable Total column
+            ),
+            data=load_data_from_json(),  # Load the data directly here
+            editable=True,
+            # Allow editing, controlled at the column level
+            style_table={'height': '720px', 'overflowY': 'auto'},
+            style_cell={
             'textAlign': 'center',
-            'display': 'inline-block',
-            'margin': '0 20px',
-            'font-size': '15px'  # Adjusted font size
-        }),
-    ], style={'textAlign': 'center', 'display': 'flex', 'justifyContent': 'center', 'alignItems': 'center'}),
-    
-    # Sales table
-    
-    dash_table.DataTable(
-        id='sales-table',
-        columns=(
-            [{"name": "Name", "id": "Name", "editable": False}] +  # Make Name column non-editable
-            [{"name": day, "id": day, "editable":True} for day in weekdays] +  # Make weekday columns editable
-            [{"name": "Goal", "id": "Goal", "editable": True}]  # Add editable Goal column
-        ),
-        data=load_data_from_json(),  # Load the data directly here
-        editable=True,
-          # Allow editing, controlled at the column level
-        style_table={'height': '720px', 'overflowY': 'auto'},
-        style_cell={
-        'textAlign': 'center',
-        'border': '5px solid maroon',
-        'padding': '5px',
-        'fontSize': '55px',
-        'fontFamily': 'Impact',
-        'height': '90px',  # Increase cell height
-        'backgroundColor': 'rgba(255, 255, 255, 0.5)',
-        'whiteSpace': 'normal',  # Ensures text wrapping is enabled
-        'minWidth': '180px',  # Adjust as needed
-        'width': '180px',  # Adjust as needed
-        'maxWidth': '180px',  # Adjust as needed
-        'overflow': 'hidden',
-        'textOverflow': 'ellipsis',
-        },
-        style_data_conditional=[
-            {'if': {'filter_query': '{{{}}} <= 1000'.format(col), 'column_id': col},
-             'color': 'black'} for col in weekdays
-        ] + [
-            {'if': {'filter_query': '1000 < {{{}}} <= 2000'.format(col), 'column_id': col},
-             'color': 'red'} for col in weekdays
-        ] + [
-            {'if': {'filter_query': '2000 < {{{}}} <= 3000'.format(col), 'column_id': col},
-             'color': 'blue'} for col in weekdays
-        ] + [
-            {'if': {'filter_query': '3000 < {{{}}} <= 4000'.format(col), 'column_id': col},
-             'color': 'green'} for col in weekdays
-        ] + [
-            {'if': {'filter_query': '4000 < {{{}}} <= 5000'.format(col), 'column_id': col},
-             'color': 'purple'} for col in weekdays
-        ] + [
-            {'if': {'filter_query': '{{{}}} > 5000'.format(col), 'column_id': col},
-             'color': 'orange'} for col in weekdays
-        ], 
+            'border': '5px solid maroon',
+            'padding': '5px',
+            'fontSize': '55px',
+            'fontFamily': 'Impact',
+            'height': '90px',  # Increase cell height
+            'backgroundColor': 'rgba(255, 255, 255, 0.5)',
+            'whiteSpace': 'normal',  # Ensures text wrapping is enabled
+            'minWidth': '180px',  # Adjust as needed
+            'width': '180px',  # Adjust as needed
+            'maxWidth': '180px',  # Adjust as needed
+            'overflow': 'hidden',
+            'textOverflow': 'ellipsis',
+            },
+            style_data_conditional=[
+                {'if': {'filter_query': '{{{}}} <= 1000'.format(col), 'column_id': col},
+                'color': 'black'} for col in weekdays
+            ] + [
+                {'if': {'filter_query': '1000 < {{{}}} <= 2000'.format(col), 'column_id': col},
+                'color': 'red'} for col in weekdays
+            ] + [
+                {'if': {'filter_query': '2000 < {{{}}} <= 3000'.format(col), 'column_id': col},
+                'color': 'blue'} for col in weekdays
+            ] + [
+                {'if': {'filter_query': '3000 < {{{}}} <= 4000'.format(col), 'column_id': col},
+                'color': 'green'} for col in weekdays
+            ] + [
+                {'if': {'filter_query': '4000 < {{{}}} <= 5000'.format(col), 'column_id': col},
+                'color': 'purple'} for col in weekdays
+            ] + [
+                {'if': {'filter_query': '{{{}}} > 5000'.format(col), 'column_id': col},
+                'color': 'orange'} for col in weekdays
+            ], 
         
 
     ),
@@ -256,14 +265,27 @@ page_1_layout = html.Div(children=[
             }
         ),
     ], style={'width': '100%', 'display': 'block', 'verticalAlign': 'top'}),
-], style={'display': 'flex', 'flex-direction': 'column', 'width': '100%'}),
+], style={'position': 'relative','display': 'flex', 'flex-direction': 'column', 'width': '100%'}),
     
     # Interval component for triggering updates to the image
     dcc.Interval(
         id='interval-component',
-        interval=10*1000,  # in milliseconds, e.g., 5 seconds
+        interval=15*1000,  # in milliseconds,
         n_intervals=0
     ),
+
+    html.Div(id='notification', style={'display': 'none',
+                                       'position': 'fixed',
+                                       'top': '20%', 
+                                       'left': '50%', 
+                                       'transform': 'translate(-50%, -50%)', 
+                                       'zIndex': '9999', 
+                                       'backgroundColor': 
+                                       'rgba(0, 255, 0, 0.9)', 
+                                       'padding': '20px', 
+                                       'borderRadius': '10px', 
+                                       'color': 'white', 
+                                       'fontSize': '20px'}),
 
 ], style={
     'backgroundImage': 'url("/assets/hex_Backg.gif")',
@@ -274,6 +296,82 @@ page_1_layout = html.Div(children=[
     'width': '100%'
 })  
 
+])
+
+            # return {'display': 'block', 'position': 'fixed', 'top': '20%', 'left': '50%', 'transform': 'translate(-50%, -50%)', 'zIndex': '9999', 'backgroundColor': 'rgba(0, 255, 0, 0.9)', 'padding': '20px', 'borderRadius': '10px', 'color': 'white', 'fontSize': '20px'}, message, json.dumps(new_notification_data)
+
+@app.callback(
+    [Output('notification', 'style'),
+     Output('notification', 'children'),
+     Output('notification-data', 'data')],
+    [Input('interval-component', 'n_intervals')],
+    [State('sales-table', 'data'),
+     State('notification-data', 'data')]
+)
+def manage_notification(n_intervals, current_rows, notification_data_json):
+    notification_data = json.loads(notification_data_json)
+    last_data = notification_data.get('last_data')
+    show_notification = notification_data.get('show_notification')
+
+    # Convert current rows to DataFrame for comparison
+    current_df = pd.DataFrame(current_rows)
+    
+    # Initialize message
+    message = ""
+
+    # Determine if there's been a change in the "Total" column
+# Ensure 'Name' column is the index for accurate comparison
+    if last_data is not None:
+        last_df = pd.DataFrame(last_data).set_index('Name')
+        current_df = current_df.set_index('Name')
+
+        # Check if the "Total" for any individual has increased by aligning both data frames on their index (Name)
+        increased_totals = (current_df['Total'] > last_df['Total']).reindex_like(current_df)
+
+        if increased_totals.any():
+            # Find the names of individuals whose "Total" has increased
+            names_with_increased_totals = increased_totals[increased_totals].index.tolist()
+            # Create a message for the notification
+            message = ", ".join(names_with_increased_totals) + " got a sale!!!"
+            # Update to show notification
+            notification_data['show_notification'] = True
+            return [{'display': 'block',
+                    'position': 'fixed',
+                    'top': '50%',
+                    'left': '0',  # Adjusted to span the whole width
+                    'width': '100%',  # Make it span the entire width of the screen
+                    'transform': 'translate(0, -50%)',  # Adjusted translation due to left: 0
+                    'zIndex': '9999',
+                    'backgroundColor': 'rgba(0, 255, 0, 0.9)',
+                    'padding': '20px',
+                    'borderRadius': '10px',
+                    'color': 'white',
+                    'fontSize': '5em',  # Adjusted for size, approximately 5x bigger depending on the original size
+                    'font-family': 'Impact, Charcoal, sans-serif',
+                    'textAlign': 'center'}, message, json.dumps({'last_data': current_df.reset_index().to_dict('records'), 'show_notification': True})]    
+    if show_notification:
+        # Clear the notification on the next tick
+        notification_data['show_notification'] = False
+        return [{'display': 'none'}, "", json.dumps({'last_data': current_rows, 'show_notification': False})]
+    
+    # If no change and not time to show notification, or if there was no previous data to compare, keep the last state
+    return [dash.no_update, dash.no_update, json.dumps({'last_data': current_rows, 'show_notification': show_notification})]
+
+@app.callback(
+    Output('notification-audio', 'src'),
+    [Input('notification-data', 'data')],  # Assuming this holds the condition for triggering the notification
+    prevent_initial_call=True  # Prevents the audio from playing immediately when the app loads
+)
+def trigger_audio_playback(notification_data):
+    notification_data = json.loads(notification_data)
+    show_notification = notification_data.get('show_notification', False)
+
+    if show_notification:
+        # Specify the path to your audio file. If it's stored in the assets folder, it can be referenced directly.
+        return app.get_asset_url('Trumpet.m4a')
+    else:
+        # Return no audio if the condition to show notification is not met
+        return ''
 @app.callback(
     Output('incentive-text', 'value'),  # Assuming 'incentive-text' is the id of your Textarea
     [Input('interval-component', 'n_intervals')]  # Triggered by the Interval component
