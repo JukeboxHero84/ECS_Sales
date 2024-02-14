@@ -96,7 +96,7 @@ app.layout = html.Div([
     dcc.Store(id='notification-data', data=json.dumps({'last_data': None, 'show_notification': False})),
     dcc.Store(id='user-access-level'),  # Store the user's access level
     html.Div(id='page-content'),
-    html.Audio(id='notification-audio', src='/assets/Trumpet.m4a', autoPlay=True, style={'display': 'none'})
+    html.Audio(id='notification-audio', src='/assets/Explosion.mp3', autoPlay=True, style={'display': 'none'})
        
 
 
@@ -368,7 +368,7 @@ def trigger_audio_playback(notification_data):
 
     if show_notification:
         # Specify the path to your audio file. If it's stored in the assets folder, it can be referenced directly.
-        return app.get_asset_url('Trumpet.m4a')
+        return app.get_asset_url('Explosion.mp3')
     else:
         # Return no audio if the condition to show notification is not met
         return ''
