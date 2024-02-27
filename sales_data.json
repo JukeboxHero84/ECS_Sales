@@ -61,5 +61,14 @@
         "Thursday": 0,
         "Friday": 0,
         "Goal": 1000
+    },
+    {
+        "Name": "Andrew",
+        "Monday": 0,
+        "Tuesday": "100",
+        "Wednesday": 0,
+        "Thursday": 0,
+        "Friday": 0,
+        "Goal": 1000
     }
 ]
