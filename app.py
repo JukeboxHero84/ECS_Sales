@@ -210,13 +210,13 @@ page_1_layout = html.Div(children=[
                 'color': 'blue'} for col in weekdays
             ] + [
                 {'if': {'filter_query': '2999 < {{{}}} <= 3999'.format(col), 'column_id': col},
-                'color': 'green'} for col in weekdays
+                'color': 'orange'} for col in weekdays
             ] + [
                 {'if': {'filter_query': '3999 < {{{}}} <= 4999'.format(col), 'column_id': col},
                 'color': 'purple'} for col in weekdays
             ] + [
                 {'if': {'filter_query': '{{{}}} > 4999'.format(col), 'column_id': col},
-                'color': 'orange'} for col in weekdays
+                'color': 'green'} for col in weekdays
             ], 
         
 
