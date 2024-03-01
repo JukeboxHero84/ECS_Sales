@@ -183,14 +183,14 @@ page_1_layout = html.Div(children=[
             data=load_data_from_json(),  # Load the data directly here
             editable=True,
             # Allow editing, controlled at the column level
-            style_table={'height': '720px', 'overflowY': 'auto'},
+            style_table={'height': '645px', 'overflowY': 'auto'},
             style_cell={
             'textAlign': 'center',
             'border': '5px solid maroon',
             'padding': '5px',
-            'fontSize': '55px',
+            'fontSize': '42px',
             'fontFamily': 'Impact',
-            'height': '90px',  # Increase cell height
+            'height': '65px',  # Increase cell height
             'backgroundColor': 'rgba(255, 255, 255, 0.5)',
             'whiteSpace': 'normal',  # Ensures text wrapping is enabled
             'minWidth': '180px',  # Adjust as needed
@@ -200,22 +200,22 @@ page_1_layout = html.Div(children=[
             'textOverflow': 'ellipsis',
             },
             style_data_conditional=[
-                {'if': {'filter_query': '{{{}}} <= 1000'.format(col), 'column_id': col},
+                {'if': {'filter_query': '{{{}}} <= 999'.format(col), 'column_id': col},
                 'color': 'black'} for col in weekdays
             ] + [
-                {'if': {'filter_query': '1000 < {{{}}} <= 2000'.format(col), 'column_id': col},
+                {'if': {'filter_query': '999 < {{{}}} <= 1999'.format(col), 'column_id': col},
                 'color': 'red'} for col in weekdays
             ] + [
-                {'if': {'filter_query': '2000 < {{{}}} <= 3000'.format(col), 'column_id': col},
+                {'if': {'filter_query': '1999 < {{{}}} <= 2999'.format(col), 'column_id': col},
                 'color': 'blue'} for col in weekdays
             ] + [
-                {'if': {'filter_query': '3000 < {{{}}} <= 4000'.format(col), 'column_id': col},
+                {'if': {'filter_query': '2999 < {{{}}} <= 3999'.format(col), 'column_id': col},
                 'color': 'green'} for col in weekdays
             ] + [
-                {'if': {'filter_query': '4000 < {{{}}} <= 5000'.format(col), 'column_id': col},
+                {'if': {'filter_query': '3999 < {{{}}} <= 4999'.format(col), 'column_id': col},
                 'color': 'purple'} for col in weekdays
             ] + [
-                {'if': {'filter_query': '{{{}}} > 5000'.format(col), 'column_id': col},
+                {'if': {'filter_query': '{{{}}} > 4999'.format(col), 'column_id': col},
                 'color': 'orange'} for col in weekdays
             ], 
         
@@ -321,7 +321,6 @@ def manage_notification(n_intervals, current_rows, notification_data_json):
     message = ""
 
     # Determine if there's been a change in the "Total" column
-# Ensure 'Name' column is the index for accurate comparison
     if last_data is not None:
         last_df = pd.DataFrame(last_data).set_index('Name')
         current_df = current_df.set_index('Name')
@@ -335,39 +334,48 @@ def manage_notification(n_intervals, current_rows, notification_data_json):
             # Create a message for the notification
             message = ", ".join(names_with_increased_totals) + " got a sale!!!"
             # Update to show notification
-            notification_data['show_notification'] = True
-            return [{'display': 'block',
-                    'position': 'fixed',
-                    'top': '50%',
-                    'left': '0',  # Adjusted to span the whole width
-                    'width': '100%',  # Make it span the entire width of the screen
-                    'transform': 'translate(0, -50%)',  # Adjusted translation due to left: 0
-                    'zIndex': '9999',
-                    'backgroundColor': 'rgba(0, 255, 0, 0.9)',
-                    'padding': '20px',
-                    'borderRadius': '10px',
-                    'color': 'white',
-                    'fontSize': '5em',  # Adjusted for size, approximately 5x bigger depending on the original size
-                    'font-family': 'Impact, Charcoal, sans-serif',
-                    'textAlign': 'center'}, message, json.dumps({'last_data': current_df.reset_index().to_dict('records'), 'show_notification': True})]    
+            show_notification = True
+        else:
+            # If there are no increases, do not show the notification
+            show_notification = False
+    else:
+        # If last_data is None, it means it's the initial load, so we prevent showing the notification
+        show_notification = False
+
+    # Update the notification_data with the current state for comparison in the next call
+    new_notification_data = json.dumps({'last_data': current_df.reset_index().to_dict('records'), 'show_notification': show_notification})
+
     if show_notification:
-        # Clear the notification on the next tick
-        notification_data['show_notification'] = False
-        return [{'display': 'none'}, "", json.dumps({'last_data': current_rows, 'show_notification': False})]
-    
-    # If no change and not time to show notification, or if there was no previous data to compare, keep the last state
-    return [dash.no_update, dash.no_update, json.dumps({'last_data': current_rows, 'show_notification': show_notification})]
+        # Display the notification
+        return [{'display': 'block',
+                 'position': 'fixed',
+                 'top': '50%',
+                 'left': '0',
+                 'width': '100%',
+                 'transform': 'translate(0, -50%)',
+                 'zIndex': '9999',
+                 'backgroundColor': 'rgba(0, 255, 0, 0.9)',
+                 'padding': '20px',
+                 'borderRadius': '10px',
+                 'color': 'white',
+                 'fontSize': '5em',
+                 'font-family': 'Impact, Charcoal, sans-serif',
+                 'textAlign': 'center'}, message, new_notification_data]
+    else:
+        # Hide the notification
+        return [{'display': 'none'}, "", new_notification_data]
 
 @app.callback(
     Output('notification-audio', 'src'),
-    [Input('notification-data', 'data')],  # Assuming this holds the condition for triggering the notification
+    [Input('notification-data', 'data'),
+     Input('url', 'pathname')],# Assuming this holds the condition for triggering the notification
     prevent_initial_call=True  # Prevents the audio from playing immediately when the app loads
 )
 def trigger_audio_playback(notification_data):
     notification_data = json.loads(notification_data)
     show_notification = notification_data.get('show_notification', False)
 
-    if show_notification:
+    if show_notification and pathname not in ['/', '/index_page']:
         # Specify the path to your audio file. If it's stored in the assets folder, it can be referenced directly.
         return app.get_asset_url('Explosion.mp3')
     else:
@@ -447,11 +455,11 @@ def update_graph(rows):
 
     # Define color based on sales thresholds
     colors = df['Total'].apply(lambda x: 
-                               'black' if x <= 1000 else
-                               'red' if 1000 < x <= 2000 else
-                               'blue' if 2000 < x <= 3000 else
-                               'green' if 3000 < x <= 4000 else
-                               'purple' if 4000 < x <= 5000 else
+                               'black' if x <= 999 else
+                               'red' if 999 < x <= 1999 else
+                               'blue' if 1999 < x <= 2999 else
+                               'green' if 2999 < x <= 3999 else
+                               'purple' if 3999 < x <= 4999 else
                                'orange')
     
     # Create the bar graph with conditional colors
