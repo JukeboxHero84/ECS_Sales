@@ -371,7 +371,7 @@ def manage_notification(n_intervals, current_rows, notification_data_json):
      Input('url', 'pathname')],# Assuming this holds the condition for triggering the notification
     prevent_initial_call=True  # Prevents the audio from playing immediately when the app loads
 )
-def trigger_audio_playback(notification_data):
+def trigger_audio_playback(notification_data, pathname):
     notification_data = json.loads(notification_data)
     show_notification = notification_data.get('show_notification', False)
 
