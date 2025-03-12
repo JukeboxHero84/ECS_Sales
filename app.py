@@ -31,11 +31,12 @@ accepted_emails = [
     'keenan@ecsempire.com',
     'taylor@ecsempire.com',
     'josh@ecsempire.com',
-    'daniel@ecsempire.com'
+    'daniel@ecsempire.com',
+    'andrew@ecsempire.com'
 ]
 
 # Prepare the data
-names = ["Rob", "Wayne", "George", "JT", "Keenan",  "Josh", "Daniel"]
+names = ["Rob", "Wayne", "George", "JT", "Keenan",  "Josh", "Daniel", "Gorgonio"]
 weekdays = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"]
 
 
