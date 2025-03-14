@@ -36,7 +36,7 @@ accepted_emails = [
 ]
 
 # Prepare the data
-names = ["Rob", "Wayne", "George", "JT", "Keenan",  "Josh", "Daniel", "Gorgonio"]
+names = ["Rob", "Wayne", "George", "JT", "Keenan",  "Josh", "Daniel", "Andrew"]
 weekdays = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"]
 
 
