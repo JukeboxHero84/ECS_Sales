@@ -6,7 +6,7 @@
         "Wednesday": "0",
         "Thursday": 0,
         "Friday": 0,
-        "Goal": 1000
+        "Goal": 100000
     },
     {
         "Name": "Wayne",
@@ -15,7 +15,7 @@
         "Wednesday": 0,
         "Thursday": 0,
         "Friday": 0,
-        "Goal": 1000
+        "Goal": 100000
     },
     {
         "Name": "George",
@@ -24,7 +24,7 @@
         "Wednesday": "0",
         "Thursday": "0",
         "Friday": 0,
-        "Goal": 1000
+        "Goal": 100000
     },
     {
         "Name": "Keenan",
@@ -33,7 +33,7 @@
         "Wednesday": "0",
         "Thursday": 0,
         "Friday": 0,
-        "Goal": 1000
+        "Goal": 50000
     },
     {
         "Name": "Josh",
@@ -42,7 +42,7 @@
         "Wednesday": "0",
         "Thursday": 0,
         "Friday": 0,
-        "Goal": 1000
+        "Goal": 50000
     },
     {
         "Name": "Andrew",
@@ -51,7 +51,17 @@
         "Wednesday": 0,
         "Thursday": 0,
         "Friday": 0,
-        "Goal": 1000
+        "Goal": 50000
+    },
+    {
+        "Name": "Phil",
+        "Monday": 0,
+        "Tuesday": "0",
+        "Wednesday": 0,
+        "Thursday": 0,
+        "Friday": 0,
+        "Goal": 50000
     }
 ]
+
 
