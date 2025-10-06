@@ -30,11 +30,12 @@ accepted_emails = [
     'keenan@ecsempire.com',
     'taylor@ecsempire.com',
     'josh@ecsempire.com',
-    'andrew@ecsempire.com'
+    'andrew@ecsempire.com',
+    'phil@ecsempire.com'
 ]
 
 # Prepare the data
-names = ["Rob", "Wayne", "George", "Keenan",  "Josh", "Andrew"]
+names = ["Rob", "Wayne", "George", "Keenan",  "Josh", "Andrew", "Phil"]
 weekdays = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"]
 
 
@@ -512,4 +513,5 @@ def display_page(pathname, user_access_level):
 
 if __name__ == '__main__':
     app.run(debug=True)
+
 
