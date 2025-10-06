@@ -9,11 +9,10 @@ plotly==6.3.1               # Oct 2, 2025. :contentReference[oaicite:2]{index=2}
 pandas==2.3.3               # Sep 29, 2025. :contentReference[oaicite:3]{index=3}
 numpy==2.3.0                # Jun 2025. :contentReference[oaicite:4]{index=4}
 pandas-datareader==0.10.0   # latest stable; still works with modern pandas. :contentReference[oaicite:5]{index=5}
-pandas-market-calendars==5.1.1  # Jun 2025. :contentReference[oaicite:6]{index=6}
-pandas-ta>=0.4.71b0         # Sep 14, 2025 build for Py>=3.12. :contentReference[oaicite:7]{index=7}
-
+pandas-market-calendars==5.1.1  # Jun 2025. :contentReference[oaicite:6]{index=6} 
 # Server/runtime
 gunicorn==23.0.0            # current docs version. :contentReference[oaicite:8]{index=8}
 jsonpickle==4.1.1           # 2025 line. :contentReference[oaicite:9]{index=9}
+
 
 
