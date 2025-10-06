@@ -452,7 +452,8 @@ def update_graph(rows):
     total_sales = df['Total'].sum()
     
     # Append total sales as a separate row for visualization
-    df = df.append({'Name': 'Total Sales', 'Total': total_sales}, ignore_index=True)
+    df = pd.concat([df, pd.DataFrame([{'Name': 'Total Sales', 'Total': total_sales}])], ignore_index=True)
+
 
     # Define color based on sales thresholds
     colors = df['Total'].apply(lambda x: 
@@ -513,5 +514,6 @@ def display_page(pathname, user_access_level):
 
 if __name__ == '__main__':
     app.run(debug=True)
+
 
 
