@@ -1,14 +1,18 @@
-﻿dash==2.15.0
-dash-bootstrap-components==1.5.0
-dash-core-components==2.0.0
-dash-html-components==2.0.0
-dash-table==5.0.0
-numpy==1.26.3
-pandas==1.5.3
-pandas-datareader==0.10.0
-pandas_market_calendars==4.3.3
-pandas_ta
-plotly==5.18.0
-gunicorn
-jsonpickle==3.0.2
+# Dash core (includes dcc, html, dash_table)
+dash==3.0.4                 # Apr 2025 release. :contentReference[oaicite:0]{index=0}
+dash-bootstrap-components==2.0.4  # Aug 2025. :contentReference[oaicite:1]{index=1}
+
+# Plotly stack
+plotly==6.3.1               # Oct 2, 2025. :contentReference[oaicite:2]{index=2}
+
+# Data stack
+pandas==2.3.3               # Sep 29, 2025. :contentReference[oaicite:3]{index=3}
+numpy==2.3.0                # Jun 2025. :contentReference[oaicite:4]{index=4}
+pandas-datareader==0.10.0   # latest stable; still works with modern pandas. :contentReference[oaicite:5]{index=5}
+pandas-market-calendars==5.1.2  # Jun 2025. :contentReference[oaicite:6]{index=6}
+pandas-ta>=0.4.71b0         # Sep 14, 2025 build for Py>=3.12. :contentReference[oaicite:7]{index=7}
+
+# Server/runtime
+gunicorn==23.0.0            # current docs version. :contentReference[oaicite:8]{index=8}
+jsonpickle==4.1.1           # 2025 line. :contentReference[oaicite:9]{index=9}
 
