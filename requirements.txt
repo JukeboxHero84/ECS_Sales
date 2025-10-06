@@ -7,7 +7,8 @@ numpy==1.26.3
 pandas==1.5.3
 pandas-datareader==0.10.0
 pandas_market_calendars==4.3.3
-pandas_ta==0.3.14b0
+pandas_ta
 plotly==5.18.0
 gunicorn
 jsonpickle==3.0.2
+
